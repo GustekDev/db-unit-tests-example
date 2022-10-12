@@ -1,7 +1,7 @@
 import {assertFails, assertSucceeds} from "@firebase/rules-unit-testing";
 import firebase = require("@firebase/rules-unit-testing");
 import fs = require("fs");
-import {setDoc, deleteDoc} from "firebase/firestore";
+import {setDoc, doc, deleteDoc} from "firebase/firestore";
 
 const PROJECT_ID = "firestore-emulator-example";
 
@@ -30,7 +30,7 @@ describe("Rules test", function() {
     const context = env.authenticatedContext(userId);
     await assertSucceeds(
         setDoc(
-            context.firestore().doc(`/privateProfiles/${userId}`),
+            doc(context.firestore(), `/privateProfiles/${userId}`),
             {}
         )
     );
@@ -43,13 +43,13 @@ describe("Rules test", function() {
     const bobContext = env.authenticatedContext(bob);
     await assertSucceeds(
         setDoc(
-            aliceContext.firestore().doc(`/privateProfiles/${alice}`),
+            doc(aliceContext.firestore(), `/privateProfiles/${alice}`),
             {}
         )
     );
     await assertFails(
         setDoc(
-            bobContext.firestore().doc(`/privateProfiles/${alice}`),
+            doc(bobContext.firestore(), `/privateProfiles/${alice}`),
             {}
         )
     );
@@ -61,13 +61,13 @@ describe("Rules test", function() {
     const db = aliceContext.firestore();
     await assertSucceeds(
         setDoc(
-            db.doc(`/privateProfiles/${alice}`),
+            doc(db, `/privateProfiles/${alice}`),
             {"smth": 1}
         )
     );
     await assertFails(
         deleteDoc(
-            db.doc(`/privateProfiles/${alice}`)
+            doc(db, `/privateProfiles/${alice}`)
         )
     );
   });
